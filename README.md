@@ -41,6 +41,55 @@ En total son 9 × 30 = **270 modelos LightGBM**. Cada corrida tiene su propia BO
 
 Las ganancias están divididas por 120.000.
 
+## Cambios respecto del workflow z739 Analista Sr de la cátedra
+
+Los cambios están en tres partes: **variables** (R1), **optimización bayesiana** y **modelo final**. Catastrophe Analysis, Data Drifting, el Random Forest de FE y los canaritos quedan igual que en el z739.
+
+| Qué | Cátedra (z739) | Esta entrega |
+|---|---|---|
+| Campos clave en el modelo | Usa `numero_de_cliente` y `foto_mes` | Los saca del modelo y del Random Forest de FE (P16) |
+| Variables intra-mes | Las del z739 | + 5 nuevas: `mtarjetas_consumo`, `ctarjetas_trx`, `ccanales_trx`, `payroll_sobre_saldo` y `margen_total` (P03) |
+| Variables históricas | Lags y deltas de orden 1 y 2 | Lags y deltas de orden 1, 2, 3 y 6, más promedio y ratio contra el promedio de 6 meses (P04) |
+| Meses de la Bayesian Optimization | Training 201901–202105 · validación 202107 | Training 201901–202103 · validación 202105 (202107 queda libre para medir la ganancia real) |
+| Evaluación de cada punto de la BO | 1 LightGBM, AUC en validación | Semillerío de **20 LightGBM**, AUC del promedio de sus probabilidades |
+| Configuraciones de la BO | 20 iniciales + 30 inteligentes = 50 | 20 iniciales + 50 inteligentes = **70** |
+| `num_iterations` (rango) | 4 a 1.024 | 8 a 150 |
+| `learning_rate` (rango) | 2^-7 a 2^-0,1 (0,008 a 0,93) | 0,1 a 0,9 |
+| `num_leaves` (rango) | 4 a 2.048 | 4 a 512 |
+| `feature_fraction` (rango) | 0,05 a 0,90 | 0,1 a 0,7 |
+| Tamaño de las hojas | Busca `min_sum_hessian_in_leaf` (2^-10 a 2^10); `min_data_in_leaf` fijo en 0 | Busca `min_data_in_leaf` (32 a 16.384); `min_sum_hessian_in_leaf` fijo en 0,001 |
+| Final train | Uno: 201901–202107 → 202109 | Dos con los mismos hiperparámetros: local (201901–202105 → 202107, para medir) y entrega (201901–202107 → 202109) |
+| Paso de la BO al final train | Hiperparámetros a mano | `trafoValue` + `min_data_in_leaf` escalado por la cantidad de filas |
+| Semillas del modelo final | 10 | 30 por corrida |
+| Semilla primigenia | 102191 | 9 corridas: 102191, 315779, 631861, 667657, 932227, 350377, 777767, 104729 y 207013 |
+| Predicción final | El semillerío de una corrida | Promedio de las 9 corridas: 270 LightGBM |
+| Envíos | Corte fijo | Umbral de probabilidad 0,0325 → 9.714 envíos |
+
+**Semillerío dentro de la BO.** Cada configuración de hiperparámetros se evalúa entrenando 20 LightGBM con semillas distintas, promediando sus probabilidades sobre 202105 y calculando el AUC de ese promedio. Así la BO busca hiperparámetros buenos para un semillerío, que es lo que se usa en el modelo final, y no para un único modelo. Las 20 semillas son las mismas en todos los puntos de una corrida: la diferencia de AUC entre dos configuraciones se debe a los hiperparámetros.
+
+**Modelos chicos.** Como cada corrida promedia 30 modelos y la entrega promedia 270, la búsqueda se limitó a modelos de hasta 150 árboles con learning rate alto. Así el semillerío en la BO entra en tiempo.
+
+**Ensemble de 9 corridas.** Cada corrida tiene su propia BO y llega a hiperparámetros distintos. La entrega promedia las 9.
+
+### Resultado de la Bayesian Optimization en cada corrida
+
+Punto ganador de cada BO (de 70 configuraciones), con el AUC del semillerío de 20 en 202105. El resto de los parámetros de LightGBM son los fijos y están en el `PARAM.yml` de cada corrida.
+
+| Corrida | Semilla | `num_iterations` | `num_leaves` | `min_data_in_leaf` | `learning_rate` | `feature_fraction` | AUC semillerío |
+|---|---|---|---|---|---|---|---|
+| WF20002 | 102191 | 133 | 157 | 2.406 | 0,138 | 0,156 | 0,93961 |
+| WF20010 | 315779 | 114 | 290 | 1.740 | 0,150 | 0,191 | 0,93948 |
+| WF20011 | 631861 | 150 | 215 | 3.265 | 0,100 | 0,292 | 0,94007 |
+| WF20012 | 667657 | 150 | 60 | 3.314 | 0,215 | 0,261 | 0,93962 |
+| WF20013 | 932227 | 149 | 230 | 12.149 | 0,221 | 0,546 | 0,93976 |
+| WF20032 | 350377 | 80 | 328 | 3.868 | 0,210 | 0,450 | 0,94000 |
+| WF20033 | 777767 | 105 | 511 | 4.080 | 0,141 | 0,334 | 0,93951 |
+| WF20030 | 104729 | 112 | 130 | 2.848 | 0,138 | 0,243 | 0,93940 |
+| WF20031 | 207013 | 48 | 139 | 2.468 | 0,375 | 0,314 | 0,93935 |
+
+- **Las 9 BO llegan a AUC casi iguales** (0,9394 a 0,9401), pero con hiperparámetros muy distintos: de 48 a 150 árboles, de 60 a 511 hojas y `feature_fraction` de 0,16 a 0,55. Por eso promediarlas aporta: son modelos distintos con un rendimiento parecido.
+- **En 3 de las 9 corridas, `num_iterations` quedó en el borde del rango** (149 o 150), y en una `learning_rate` quedó en el mínimo (0,100). Ampliar esos límites es una mejora posible para una próxima versión.
+
 ## Cómo se llegó a este modelo
 
 Todas las corridas usan **corrida doble**: una sola BO (training hasta 202103 con el 20 % de los CONTINUA, testing en 202105) y dos final train con los mismos hiperparámetros:
