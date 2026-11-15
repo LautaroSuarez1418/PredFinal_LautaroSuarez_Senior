@@ -103,7 +103,7 @@ Resultado: **618,5**. No mejora a R1. **Descartado.**
 - **Local:** empata con R1 (−1,7 de media).
 - **Public:** pierde 16 puntos, en 8 de 9 comparaciones.
 
-**Descartado:** los lags 3 y 6 sí aportan.
+**Descartado.**
 
 ### Ensemble de corridas de R1
 
