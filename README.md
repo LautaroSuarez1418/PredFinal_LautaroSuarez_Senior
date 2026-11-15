@@ -27,7 +27,7 @@ Competencia Kaggle `labo-1-virtual-2026-analista-sr`. Entrega final: **`ENS_R1x9
 
 **Ensemble R1x9.** Para cada cliente, se promedian con el mismo peso las probabilidades de 9 corridas completas de R1, cada una con una semilla primigenia distinta. Dentro de cada corrida:
 
-- **Optimización bayesiana:** 70 configuraciones (20 iniciales y 50 inteligentes). Cada configuración se evalúa con un **semillerío de 20 semillas**: se entrenan 20 LightGBM con esos hiperparámetros y la BO mide el AUC del promedio de sus probabilidades.
+- **Optimización bayesiana:** prueba **70 combinaciones de hiperparámetros** (20 al azar para arrancar y 50 elegidas por la BO). Para evaluar cada combinación entrena 20 modelos iguales con distintas semillas, promedia sus predicciones y se queda con la combinación cuyo promedio mejor separa a los clientes que se van (mayor AUC). Así elige hiperparámetros que rinden bien en un semillerío, como después se usan en producción, y no los que tuvieron suerte con una sola semilla.
 - **Producción:** un **semillerío de 30 semillas** con los hiperparámetros elegidos por la BO. La probabilidad de la corrida es el promedio de esos 30 modelos.
 
 En total son 9 × 30 = **270 modelos LightGBM**. Cada corrida tiene su propia BO y llega a hiperparámetros distintos: promediar BO distintas reduce la dependencia de la semilla mucho más que agregar semillas de producción.
