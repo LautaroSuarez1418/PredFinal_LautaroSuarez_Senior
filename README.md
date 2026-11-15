@@ -22,8 +22,6 @@ Competencia Kaggle `labo-1-virtual-2026-analista-sr`. Entrega final: **`ENS_R1x9
 | `Predicted` | `1` = se le envía el estímulo; `0` = no se le envía |
 
 - **9.714 clientes con `Predicted = 1`:** son los que tienen probabilidad promedio de BAJA+2 mayor a 0,0325 en el ensemble R1x9.
-- **Se reproduce** corriendo `PredFinal_Senior_Suarez_Ensemble.ipynb`, que lo escribe como `exp/ENS/FINAL/ENS_R1x9_entrega_u0325_9714.csv` con el mismo contenido.
-- **El notebook también genera una alternativa** con umbral 0,030 (10.294 envíos), que no se entregó: la competencia admite una sola entrega final.
 
 ## Modelo final
 
