@@ -8,7 +8,7 @@ Competencia Kaggle `labo-1-virtual-2026-analista-sr`. Entrega final: **`ENS_R1x9
 
 | Archivo | Qué hace |
 |---|---|
-| `PredFinal_Senior_Suarez_R1.ipynb` | Pipeline completo de **una** corrida de R1. Graba `prediccion_local.txt` (202107) y `prediccion_entrega.txt` (202109) en `exp/WF<experimento>/`. Es `PredFinal_Senior_Suarez_Version_1.ipynb` sin salidas y con la subida a Kaggle desactivada. |
+| `PredFinal_Senior_Suarez_R1.ipynb` | Pipeline completo de **una** corrida de R1. Graba `prediccion_local.txt` (202107) y `prediccion_entrega.txt` (202109) en `exp/WF<experimento>/`. Es el codigo "base", sin salidas y con la subida a Kaggle desactivada. |
 | `correr_9_semillas.sh` | **Paso 1.** Crea una copia del notebook R1 por semilla primigenia (cambia solo `PARAM$experimento` y `PARAM$semilla_primigenia`), las corre en cadena y al final corre el ensemble. |
 | `PredFinal_Senior_Suarez_Ensemble.ipynb` | **Paso 2.** Promedia las probabilidades de las 9 corridas, controla la ganancia en 202107 y escribe el archivo de entrega. |
 
