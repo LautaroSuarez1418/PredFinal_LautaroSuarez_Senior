@@ -1,6 +1,7 @@
 # Predicción final · Labo 1 · Analista Sr · Lautaro Suarez
 
-Competencia Kaggle `labo-1-virtual-2026-analista-sr`. Entrega final: **`ENS_R1x9_u0325_9714.csv`**, con 9.714 envíos en 202109.
+Competencia Kaggle `labo-1-virtual-2026-analista-sr`.
+Entrega final: **`ENS_R1x9_u0325_9714.csv`**, con 9.714 envíos en 202109.
 
 ## Archivos
 
