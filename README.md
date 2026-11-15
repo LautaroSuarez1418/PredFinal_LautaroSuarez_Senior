@@ -62,7 +62,7 @@ Las decisiones se tomaron con la **ganancia local en 202107**. El Public de Kagg
 - **Árboles acotados** en el espacio de búsqueda, para que el semillerío en la BO entre en tiempo.
 - **Semillerío de producción de 50 semillas** en lugar de 10.
 - **Corrida doble:** final train local y final train de entrega.
-- **Paso de la BO a producción:** con `trafoValue`, y `min_data_in_leaf` escalado según la cantidad de filas del final train.
+- **Paso de la BO a producción:** la BO busca algunos hiperparámetros en una escala transformada (por ejemplo, en potencias de 2). trafoValue los convierte a su valor real antes de entrenar los modelos finales. Además, como el final train usa muchas más filas que la BO, min_data_in_leaf (el mínimo de clientes por hoja) se agranda en la misma proporción, para que los árboles finales tengan el mismo tamaño relativo que los que eligió la BO.
 
 Resultado: **603,5** (corte 12.500).
 
@@ -70,7 +70,7 @@ Resultado: **603,5** (corte 12.500).
 
 **R0b = R0, con el semillerío de producción de 30 semillas** en lugar de 50. Todo lo demás igual, con la misma semilla primigenia.
 
-Resultado: **612,5** (corte 11.500). La diferencia con R0 está dentro del ruido entre semillas (unos 5 a 10 puntos), así que 30 semillas alcanzan. Más adelante se confirmó con la curva de semillas de producción: después de 10, ya no se gana nada. **Desde acá, todas las corridas usan 30 semillas de producción y 20 en la BO.**
+Resultado: **612,5** (corte 11.500). La diferencia con R0 está dentro del ruido entre semillas (unos 5 a 10 puntos), así que 30 semillas alcanzan. **Desde acá, todas las corridas usan 30 semillas de producción y 20 en la BO.**
 
 ### R1 · Variables (pipeline elegido)
 
