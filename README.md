@@ -14,7 +14,7 @@ Competencia Kaggle `labo-1-virtual-2026-analista-sr`. Entrega final: **`ENS_R1x9
 
 ## Archivo entregado
 
-**`entrega/ENS_R1x9_u0325_9714.csv`** es el archivo que se subió a Kaggle y quedó marcado como entrega final (*Use for Final Score*).
+**`entrega/ENS_R1x9_u0325_9714.csv`** es el archivo que se subió a Kaggle y quedó marcado como entrega final.
 
 | Columna | Contenido |
 |---|---|
